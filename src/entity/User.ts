@@ -2,6 +2,7 @@ import {Entity, PrimaryGeneratedColumn, Column, BeforeInsert, OneToMany, ManyToM
 import * as bcrypt from 'bcrypt';
 import {Post} from "./Post";
 import {Comment} from "./Comment";
+import config from '../config/config';
 import {Like} from "./Like";
 
 @Entity()
@@ -38,12 +39,16 @@ export class User {
     @JoinTable()
     followers: User[];
 
+    public checkUnencryptedPassword(unencryptedPassword: string) {
+        return bcrypt.compareSync(unencryptedPassword, this.password);
+    }
+
     @BeforeInsert()
-    async encryptPassword() {
+    encryptPassword() {
         try {
-            this.password = await bcrypt.hash(this.password, 12);       
+            this.password = bcrypt.hashSync(this.password, config.saltRounds);       
         } catch (e) {
-            console.log(e);
+            console.log("Error encrypting");
         }
     }
 }
