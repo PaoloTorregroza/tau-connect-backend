@@ -2,9 +2,7 @@ import "reflect-metadata";
 import {createConnection} from "typeorm";
 import * as express from "express";
 import * as bodyParser from "body-parser";
-import {Request, Response} from "express";
 import routes from "./routes/routes";
-import {User} from "./entity/User";
 import * as cors from 'cors';
 
 createConnection().then(async connection => {
@@ -48,6 +46,4 @@ createConnection().then(async connection => {
     //    register_at: new Date(),
     //    followers: [user] // Array of followers
     //}));
-
-
 }).catch(error => console.log(error));

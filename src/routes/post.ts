@@ -8,6 +8,8 @@ router.get("/", PostController.all);
 router.delete("/:id", [checkJwt], PostController.remove);
 router.post("/", PostController.save);
 router.get("/:id", PostController.one);
-router.post("/like/:id", [checkJwt], PostController.like);
+router.put("/like/:id", [checkJwt], PostController.like);
+router.put("/comment/:id", [checkJwt], PostController.comment);
+router.get("/comments/:id", PostController.getComments);
 
 export default router;
