@@ -7,7 +7,7 @@ import {decodeJwt} from '../services/decodeJwt';
 import * as bcrypt from 'bcrypt';
 
 class AuthController {
-    static login = async (request: Request, response: Response, next: NextFunction) => {
+    static login = async (request: Request, response: Response) => {
         // Check if email and password are set
         let {email, password} = request.body;
         if (!(email && password)) {
@@ -41,7 +41,7 @@ class AuthController {
         }
     }
 
-    static register = async (request: Request, response: Response, next: NextFunction) => {
+    static register = async (request: Request, response: Response) => {
         let {name, password, email} = request.body;
         if (!(name && password && email)) {
             response.status(401).send();
@@ -61,7 +61,7 @@ class AuthController {
         response.send(results);
     }
 
-    static changePassword = async (request: Request, response: Response, next: NextFunction) => {
+    static changePassword = async (request: Request, response: Response) => {
         // Get ID from JWT 
         const token = decodeJwt(<string>request.headers["auth"]);
         const id = token.id;

@@ -17,20 +17,32 @@ class PostController {
     @InjectRepo(Comment)
     private static commentRepository: Repository<Comment>;
 
-    static all = async (request: Request, response: Response, next: NextFunction) => {
+    static all = async (request: Request, response: Response) => {
         const results = await PostController.postRepository.find();
         response.send(results);
     }
 
-    static one = async (request: Request, response: Response, next: NextFunction) => {
-        const results = await PostController.postRepository.findOne(request.params.id);
-        response.send(results);
+    static one = async (request: Request, response: Response) => {
+        try {
+            const results = await PostController.postRepository.findOne(request.params.id);
+            response.send(results);
+        } catch (e) {
+            response.status(400).send("Invalid ID");
+        }
     }
 
-    static save = async (request: Request, response: Response, next: NextFunction) => {
+    static save = async (request: Request, response: Response) => {
         const token = decodeJwt(<string>request.headers["auth"]);
         const post = new Post();
-        const user = await PostController.userRepository.findOne(token.id);
+        let user: User;
+        try {
+            if (!request.body.body || typeof request.body.body != "string" ) {
+                throw new Error("Invalid data");
+            }
+            user = await PostController.userRepository.findOne(token.id);
+        } catch (e) {
+            response.status(400).send("Invalid body or user not exists");
+        }
 
         post.body = request.body.body;
         post.comments = [];
@@ -42,27 +54,41 @@ class PostController {
         response.send(results);
     }
 
-    static remove = async (request: Request, response: Response, next: NextFunction) => {
-        const postToRemove = await PostController.postRepository.findOne(request.params.id);
-        const token = decodeJwt(<string>request.headers["auth"]);
-        const user = await PostController.userRepository.findOne(token.id);
+    static remove = async (request: Request, response: Response) => {
+        let postToRemove: Post;
+        let user: User;
+        let token: any;
+
+        try {
+            postToRemove = await PostController.postRepository.findOne(request.params.id);
+            token = decodeJwt(<string>request.headers["auth"]);
+            user = await PostController.userRepository.findOne(token.id);
+        } catch (e) {
+            response.status(400).send("Invalid data");
+        }
 
         if (user.id != postToRemove.user.id) {
-            response.status(401).send();
+            response.status(401).send("You can't remove other people posts");
         } else {
             await PostController.postRepository.remove(postToRemove);
             response.send("Post removed");
         }
     }
 
-    static like = async (request: Request, response: Response, next: NextFunction) => {
+    static like = async (request: Request, response: Response) => {
         const token = decodeJwt(<string>request.headers["auth"]);
         const userId = token.id;
 
-        const like = new Like();
-        const post = await PostController.postRepository.findOne(request.params.id);
-        const user = await PostController.userRepository.findOne(userId);
+        let post: Post;
+        let user: User;
 
+        const like = new Like();
+        try {
+            post = await PostController.postRepository.findOne(request.params.id);
+            user = await PostController.userRepository.findOne(userId);
+        } catch (e) {
+            response.status(400).send("Invalid data");
+        }
         like.user = user;
         like.post = post;
 
@@ -80,13 +106,22 @@ class PostController {
         }
     }
 
-    static comment = async (request: Request, response: Response, next: NextFunction) => {
+    static comment = async (request: Request, response: Response) => {
         const token = decodeJwt(<string>request.headers["auth"]);
         const userId = token.id;
 
         const comment = new Comment();
-        const post = await PostController.postRepository.findOne(request.params.id);
-        const user = await PostController.userRepository.findOne(userId);
+        let post: Post;
+        let user: User;
+        try {
+            post = await PostController.postRepository.findOne(request.params.id);
+            user = await PostController.userRepository.findOne(userId);
+            if (!request.body.body || typeof request.body.body != "string") {
+                throw new Error("Invalid body");
+            }
+        } catch (e) {
+            response.status(400).send("Invalid data");
+        }
 
         comment.user = user;
         comment.body = request.body.body;
@@ -97,11 +132,14 @@ class PostController {
         response.send(results);
     }
 
-    static getComments = async (request: Request, response: Response, next: NextFunction) => {
-        const post = await PostController.postRepository.findOne(request.params.id);
-        const comments = await PostController.commentRepository.find({post: post});
-
-        response.send(comments);
+    static getComments = async (request: Request, response: Response) => {
+        try {
+            const post = await PostController.postRepository.findOne(request.params.id);
+            const comments = await PostController.commentRepository.find({post: post}); 
+            response.send(comments);
+        } catch (e) {
+            response.status(400).send("Invalid data");
+        }
     }
 }
 
