@@ -1,4 +1,4 @@
-import {getRepository} from 'typeorm';
+import {getRepository, QueryFailedError} from 'typeorm';
 import {NextFunction, Request, Response, response} from 'express';
 import {User} from '../entity/User';
 import * as jwt from 'jsonwebtoken';
@@ -54,10 +54,14 @@ class AuthController {
         newUser.email = email;
         newUser.register_at = new Date();
         newUser.activated = true;  // [TODO] Make email acount verification
-
-        const user = userRepository.create(newUser);
-        const results = await userRepository.save(user);
-
+		
+		let results: User;
+		try {
+        	const user = userRepository.create(newUser);
+        	results = await userRepository.save(user);
+		} catch (e) {
+			response.status(400).send("Error creating user, email already exists")
+		}
         response.send(results);
     }
 

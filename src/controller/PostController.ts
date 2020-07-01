@@ -28,6 +28,7 @@ class PostController {
             response.send(results);
         } catch (e) {
             response.status(400).send("Invalid ID");
+            return;
         }
     }
 

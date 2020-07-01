@@ -1,10 +1,11 @@
-import {Entity, PrimaryGeneratedColumn, Column, BeforeInsert, OneToMany, ManyToMany, JoinTable} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BeforeInsert, OneToMany, ManyToMany, JoinTable, Unique} from "typeorm";
 import * as bcrypt from 'bcrypt';
 import {Post} from "./Post";
 import {Comment} from "./Comment";
 import config from '../config/config';
 import {Like} from "./Like";
 
+@Unique(["email"])
 @Entity()
 export class User {
 
@@ -14,7 +15,7 @@ export class User {
     @Column()
     name: string;
 
-    @Column()
+    @Column({name: "email"})
     email: string;
 
     @Column()
