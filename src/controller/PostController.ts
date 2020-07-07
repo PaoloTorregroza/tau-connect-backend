@@ -1,11 +1,11 @@
 import {Request, Response, NextFunction} from "express";
 import {Repository} from "typeorm";
 import {Post} from "../entity/Post";
-import {decodeJwt} from "../services/decodeJwt";
+import {decodeJwt} from "../utils/decodeJwt";
 import {User} from "../entity/User";
 import {Like} from "../entity/Like";
 import {Comment} from '../entity/Comment';
-import {InjectRepo} from '../services/InjectRepo';
+import {InjectRepo} from '../utils/InjectRepo';
 
 class PostController {
     @InjectRepo(Post)
@@ -27,13 +27,13 @@ class PostController {
             const results = await PostController.postRepository.findOne(request.params.id);
             response.send(results);
         } catch (e) {
-            response.status(400).send("Invalid ID");
+            response.status(400).send({msg: "Invalid ID"});
             return;
         }
     }
 
     static save = async (request: Request, response: Response) => {
-        const token = decodeJwt(<string>request.headers["auth"]);
+        const token = decodeJwt(<string>request.headers.authorization);
         const post = new Post();
         let user: User;
         try {
@@ -42,7 +42,7 @@ class PostController {
             }
             user = await PostController.userRepository.findOne(token.id);
         } catch (e) {
-            response.status(400).send("Invalid body or user not exists");
+            response.status(400).send({msg: "Invalid body or user not exists"});
         }
 
         post.body = request.body.body;
@@ -62,14 +62,14 @@ class PostController {
 
         try {
             postToRemove = await PostController.postRepository.findOne(request.params.id);
-            token = decodeJwt(<string>request.headers["auth"]);
+            token = decodeJwt(<string>request.headers.authorization);
             user = await PostController.userRepository.findOne(token.id);
         } catch (e) {
-            response.status(400).send("Invalid data");
+            response.status(400).send({msg: "Invalid data"});
         }
 
         if (user.id != postToRemove.user.id) {
-            response.status(401).send("You can't remove other people posts");
+            response.status(401).send({msg: "You can't remove other people posts"});
         } else {
             await PostController.postRepository.remove(postToRemove);
             response.send("Post removed");
@@ -77,7 +77,7 @@ class PostController {
     }
 
     static like = async (request: Request, response: Response) => {
-        const token = decodeJwt(<string>request.headers["auth"]);
+        const token = decodeJwt(<string>request.headers.authorization);
         const userId = token.id;
 
         let post: Post;
@@ -88,7 +88,7 @@ class PostController {
             post = await PostController.postRepository.findOne(request.params.id);
             user = await PostController.userRepository.findOne(userId);
         } catch (e) {
-            response.status(400).send("Invalid data");
+            response.status(400).send({msg: "Invalid data"});
         }
         like.user = user;
         like.post = post;
@@ -100,7 +100,7 @@ class PostController {
         // Delete it if exists and create it if not.
         if (oldLike){
             results = await PostController.likeRepository.remove(oldLike);
-            response.status(200).send("Like removed");
+            response.status(200).send({msg: "Like removed"});
         } else {
             results = await PostController.likeRepository.save(like);
             response.send(results);
@@ -108,7 +108,7 @@ class PostController {
     }
 
     static comment = async (request: Request, response: Response) => {
-        const token = decodeJwt(<string>request.headers["auth"]);
+        const token = decodeJwt(<string>request.headers.authorization);
         const userId = token.id;
 
         const comment = new Comment();
@@ -121,7 +121,7 @@ class PostController {
                 throw new Error("Invalid body");
             }
         } catch (e) {
-            response.status(400).send("Invalid data");
+            response.status(400).send({msg: "Invalid data"});
         }
 
         comment.user = user;
@@ -139,7 +139,7 @@ class PostController {
             const comments = await PostController.commentRepository.find({post: post}); 
             response.send(comments);
         } catch (e) {
-            response.status(400).send("Invalid data");
+            response.status(400).send({msg: "Invalid data"});
         }
     }
 }

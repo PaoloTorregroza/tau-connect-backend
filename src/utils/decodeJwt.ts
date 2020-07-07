@@ -1,6 +1,7 @@
 import {decode} from 'base-64';
 
 export function decodeJwt(token: string) {
+	token = token.replace("Bearer ", "");
     let base64Url = token.split('.')[1];
     let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     let jsonPayload = decodeURIComponent(
@@ -13,3 +14,5 @@ export function decodeJwt(token: string) {
     );
     return JSON.parse(jsonPayload);
 }
+
+

@@ -6,6 +6,7 @@
    "devDependencies": {
       "@types/node": "^8.0.29",
       "ts-node": "3.3.0",
+      "ts-watch": "^1.0.8",
       "typescript": "3.3.3333"
    },
    "dependencies": {
@@ -25,6 +26,6 @@
       "typeorm": "0.2.25"
    },
    "scripts": {
-      "start": "ts-node src/index.ts"
+      "start": "nodemon"
    }
 }

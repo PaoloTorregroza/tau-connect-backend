@@ -1,8 +1,8 @@
 import {Repository} from "typeorm";
 import {Request, Response} from "express";
 import {User} from "../entity/User";
-import {decodeJwt} from '../services/decodeJwt';
-import {InjectRepo} from '../services/InjectRepo';
+import {decodeJwt} from '../utils/decodeJwt';
+import {InjectRepo} from '../utils/InjectRepo';
 
 class UserController {
 
@@ -19,16 +19,17 @@ class UserController {
             const results = await UserController.userRepository.findOne(request.params.id); 
             response.send(results);        
         } catch (e) {
-            response.send("Invalid ID");
+            response.send({msg: "Invalid ID"});
         }
     }
 
     static save = async (request: Request, response: Response) => {
         try {
             const results = await UserController.userRepository.save(request.body);
-            response.send(results);
+			delete results.password;
+			response.send(results);
         } catch (e) {
-            response.send("Invalid data");
+            response.status(400).send({msg: "Invalid data"});
         }
     }
 
@@ -36,14 +37,14 @@ class UserController {
         try {
             let userToRemove = await UserController.userRepository.findOne(request.params.id);
             await UserController.userRepository.remove(userToRemove);
-            response.send("User removed");
+            response.send({msg: "User removed"});
         } catch (e) {
-            response.status(401).end("Invalid ID");
+            response.status(400).end({msg: "Invalid ID"});
         }
     }
 
     static follow = async (request: Request, response: Response) => {
-        const followerId = decodeJwt(<string>request.headers["auth"]).id;
+        const followerId = decodeJwt(<string>request.headers.authorization).id;
 
         let user: User;
         let follower: User;
@@ -51,7 +52,7 @@ class UserController {
             follower = await UserController.userRepository.findOne(followerId);
             user = await UserController.userRepository.findOne(request.body.userId);
         } catch (e) {
-            response.status(401).send("Invalid ID");
+            response.status(400).send({msg: "Invalid ID"});
         }
 
         if (!user.followers) user.followers = [];

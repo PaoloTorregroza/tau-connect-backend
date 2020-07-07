@@ -1,9 +1,9 @@
-import {getRepository, QueryFailedError} from 'typeorm';
-import {NextFunction, Request, Response, response} from 'express';
+import {getRepository} from 'typeorm';
+import {Request, Response} from 'express';
 import {User} from '../entity/User';
 import * as jwt from 'jsonwebtoken';
 import config from '../config/config';
-import {decodeJwt} from '../services/decodeJwt';
+import {decodeJwt} from '../utils/decodeJwt';
 import * as bcrypt from 'bcrypt';
 
 class AuthController {
@@ -11,7 +11,7 @@ class AuthController {
         // Check if email and password are set
         let {email, password} = request.body;
         if (!(email && password)) {
-            response.status(400).send();
+            response.status(400).send({msg: "Email or password not provided"});
         }
 
         // Get user from database
@@ -20,12 +20,12 @@ class AuthController {
         try {
             user = await userRepository.findOneOrFail({where: {email}});
         } catch (e) {
-            response.status(401).send();
+            response.status(401).send({msg: "User not found"});
         }
 
         // Check if encrypted password match
         if (user != undefined && !user.checkUnencryptedPassword(password)) {
-            response.status(401).send();
+            response.status(401).send({msg: "Passwords don't match"});
             return;
         }
 
@@ -37,14 +37,14 @@ class AuthController {
                 {expiresIn: "6h"}
             );
 
-            response.send(token);
+            response.send({token: token});
         }
     }
 
     static register = async (request: Request, response: Response) => {
         let {name, password, email} = request.body;
         if (!(name && password && email)) {
-            response.status(401).send();
+            response.status(400).send({msg: "Data not provided"});
         }
 
         const userRepository = getRepository(User);
@@ -60,20 +60,21 @@ class AuthController {
         	const user = userRepository.create(newUser);
         	results = await userRepository.save(user);
 		} catch (e) {
-			response.status(400).send("Error creating user, email already exists")
+			response.status(400).send({msg: "Error creating user, email already exists"})
 		}
+		delete results.password;
         response.send(results);
     }
 
     static changePassword = async (request: Request, response: Response) => {
         // Get ID from JWT 
-        const token = decodeJwt(<string>request.headers["auth"]);
+        const token = decodeJwt(<string>request.headers.authorization);
         const id = token.id;
 
         // Get parameters from the body
         const {oldPassword, newPassword} = request.body;
         if (!(oldPassword && newPassword)) {
-            response.status(400).send();
+            response.status(400).send({msg: "Passwords not provided"});
         }
 
         // Get user from the database  
@@ -83,20 +84,20 @@ class AuthController {
         try {
             user = await userRepository.findOneOrFail(id);
         } catch(e) {
-            response.status(401).send();
+            response.status(401).send({msg: "User don't exists"});
             return;
         }
 
         // Chech if the old passwords matchs
         if (!user.checkUnencryptedPassword(oldPassword)) {
-            response.status(401).send();
+            response.status(401).send({msg: "Password don't match"});
             return;
         }
 
         user.password = bcrypt.hashSync(newPassword, config.saltRounds);
         await userRepository.save(user);
 
-        response.status(204).send();
+        response.status(200).send({msg: "Password changed"});
     }
 }
 
