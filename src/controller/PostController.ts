@@ -14,13 +14,8 @@ class PostController {
     }
 
     static one = async (request: Request, response: Response) => {
-        try {
-            const results = await PostController.postRepository.findOne(request.params.id);
-            response.send(results);
-        } catch (e) {
-            response.status(400).send({msg: "Invalid ID"});
-            return;
-        }
+        const responseData = await PostServices.one(request);
+        response.status(responseData.status).send(responseData.data);
     }
 
     static save = async (request: Request, response: Response) => {

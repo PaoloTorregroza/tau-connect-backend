@@ -11,7 +11,7 @@ interface responseDefinition {
     status: number;
     data: {
         msg?: string;
-        data?: Post | Like | Comment | Comment[];
+        data?;
     }
 }
 
@@ -24,6 +24,28 @@ class PostServices {
     private static likeRepository: Repository<Like>;
     @InjectRepo(Comment)
     private static commentRepository: Repository<Comment>;
+
+    static async one (request: Request) {
+        let response: responseDefinition = {
+            status: 400,
+            data: {}
+        }
+        try {
+            const post = await PostServices.postRepository.findOneOrFail(request.params.id);
+            const user = await PostServices.userRepository.findOneOrFail({relations: ["posts"]});
+            const results = {
+                post,
+                user
+            }
+            delete results.user.password;
+            response.status = 200;
+            response.data = {data: results};
+            return response;
+        } catch (e) {
+            response.data = {msg: "Invalid ID"};
+            return response;
+        }
+    }
 
     static async save(request: Request) {
         let response: responseDefinition = {

@@ -55,7 +55,10 @@ class AuthServices {
             );
 
 			response.status = 200;
-			response.data = {token: token};
+			response.data = {
+				token: token,
+				data: user
+			};
 
 			return response;
         }		
