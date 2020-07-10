@@ -54,6 +54,7 @@ class AuthServices {
                 {expiresIn: "6h"}
             );
 
+			delete user.password;
 			response.status = 200;
 			response.data = {
 				token: token,
@@ -70,8 +71,8 @@ class AuthServices {
 			data: {}
 		};
 
-		let {name, password, email} = request.body;
-        if (!(name && password && email)) {
+		let {name, username, password, email} = request.body;
+        if (!(name && username && password && email)) {
 			response.data = {msg: "Data not provided"}
 			return response;
 		}
@@ -79,6 +80,7 @@ class AuthServices {
         const userRepository = getRepository(User);
         const newUser = new User();
         newUser.name = name;
+	newUser.username = username;
         newUser.password = password;
         newUser.email = email;
         newUser.register_at = new Date();

@@ -1,14 +1,13 @@
 import "reflect-metadata";
-import {createConnection} from "typeorm";
-import * as express from "express";
+import {createConnection, Server} from "typeorm";
+import express from "express";
 import * as bodyParser from "body-parser";
 import routes from "./routes/routes";
-import * as cors from 'cors';
+import cors from 'cors';
 
-createConnection().then(async connection => {
-
-    // create express app
+const init = () => createConnection().then( async () => {
     const app = express();
+    // create express app
     app.use(bodyParser.json());
     app.use(cors());
 
@@ -18,4 +17,12 @@ createConnection().then(async connection => {
 
     console.log("Express server has started on port 3000.");
 
+    return app;
+
 }).catch(error => console.log(error));
+
+init();
+
+export default init;
+
+

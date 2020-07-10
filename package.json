@@ -4,7 +4,12 @@
    "license": "MIT",
    "description": "Awesome project developed with TypeORM.",
    "devDependencies": {
+      "@types/chai": "^4.2.11",
+      "@types/mocha": "^7.0.2",
       "@types/node": "^8.0.29",
+      "chai": "^4.2.0",
+      "chai-http": "^4.3.0",
+      "mocha": "^8.0.1",
       "ts-node": "3.3.0",
       "ts-watch": "^1.0.8",
       "typescript": "3.3.3333"
@@ -26,6 +31,7 @@
       "typeorm": "0.2.25"
    },
    "scripts": {
-      "start": "nodemon"
+      "start": "nodemon",
+      "test": "mocha -r ts-node/register src/**/*.spec.ts"
    }
 }

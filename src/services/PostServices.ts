@@ -25,18 +25,36 @@ class PostServices {
     @InjectRepo(Comment)
     private static commentRepository: Repository<Comment>;
 
+    static async all (request: Request) {
+        let response: responseDefinition = {
+            status: 200,
+            data: {}
+        }
+        
+        try {
+            const posts = await PostServices.postRepository.find({relations: ["user"]});
+ 
+            posts.forEach(post => {
+                delete post.user.password;
+            }) 
+
+            response.data = {data: posts};
+            return response;
+        } catch (e) {
+            console.log(e);
+            response.status = 500;
+            response.data = {msg: "Error getting posts"};
+        }
+        return response;
+    }
+
     static async one (request: Request) {
         let response: responseDefinition = {
             status: 400,
             data: {}
         }
         try {
-            const post = await PostServices.postRepository.findOneOrFail(request.params.id);
-            const user = await PostServices.userRepository.findOneOrFail({relations: ["posts"]});
-            const results = {
-                post,
-                user
-            }
+            const results = await PostServices.postRepository.findOneOrFail(request.params.id, {relations: ["user"]});
             delete results.user.password;
             response.status = 200;
             response.data = {data: results};
@@ -72,6 +90,7 @@ class PostServices {
         post.user = user;
 
         const results = await PostServices.postRepository.save(post);
+        delete results.user.password;
         response.data = {data: results};
         response.status = 200;
         return response;
@@ -85,9 +104,11 @@ class PostServices {
         let postToRemove: Post;
         let user: User;
         let token: any;
+        let postOwner: User;
 
         try {
-            postToRemove = await PostServices.postRepository.findOne(request.params.id);
+            postToRemove = await PostServices.postRepository.findOneOrFail(request.params.id);
+            postOwner = await PostServices.userRepository.findOneOrFail({relations: ["posts"]})
             token = decodeJwt(<string>request.headers.authorization);
             user = await PostServices.userRepository.findOne(token.id);
         } catch (e) {
@@ -95,7 +116,7 @@ class PostServices {
             return response;
         }
 
-        if (user.id != postToRemove.user.id) {
+        if (user.id != postOwner.id) {
             response.status = 401;
             response.data = {msg: "You can't remove other people posts"};
             return response;
@@ -141,8 +162,10 @@ class PostServices {
             return response;
         } else {
             results = await PostServices.likeRepository.save(like);
+            delete results.user.password;
             response.status = 200;
             response.data = {data: results};
+            return response;
         }
     }
 
@@ -174,6 +197,7 @@ class PostServices {
         comment.post = post;
 
         const results = await PostServices.commentRepository.save(comment);
+        delete results.user.password;
         response.status = 200;
         response.data = {data: results};
         return response;

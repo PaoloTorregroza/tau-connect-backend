@@ -9,8 +9,8 @@ class PostController {
     private static postRepository: Repository<Post>;
 
     static all = async (request: Request, response: Response) => {
-        const results = await PostController.postRepository.find();
-        response.send(results);
+        const responseData = await PostServices.all(request);
+        response.status(responseData.status).send(responseData.data);
     }
 
     static one = async (request: Request, response: Response) => {

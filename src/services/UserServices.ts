@@ -16,6 +16,30 @@ class UserServices {
     @InjectRepo(User)
     private static userRepository: Repository<User>;
 
+    static async update(request: Request) {
+        let response: responseDefinition = {
+            status: 401,
+            data: {}
+        }
+
+        const userId = decodeJwt(<string>request.headers.authorization).id
+        if (userId != request.params.id) {
+            response.data = {msg: "You can't change other users data"};
+            return response;
+        }
+        try {
+            await UserServices.userRepository.update(request.params.id, request.body);
+            const results = await UserServices.userRepository.findOneOrFail(request.params.id);
+            delete results.password;
+            response.status = 200;
+            response.data = {msg: "User updated", data: results};
+        } catch(e) {
+            response.status = 500;
+            response.data = {msg: "Error updating user"};
+        }
+        return response;
+    }
+
     static async follow(request: Request) {
         let response: responseDefinition = {
             status: 400,
@@ -38,6 +62,8 @@ class UserServices {
         user.followers.push(follower);
         
         const results = await UserServices.userRepository.save(user);
+        delete results.password
+        results.followers.forEach(e => delete e.password);
         response.status = 200;
         response.data = {data: results};
         return response;
