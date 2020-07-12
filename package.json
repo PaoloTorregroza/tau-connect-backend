@@ -32,6 +32,6 @@
    },
    "scripts": {
       "start": "nodemon",
-      "test": "mocha -r ts-node/register src/**/*.spec.ts"
+      "test": "mocha -r ts-node/register src/tests/*.spec.ts"
    }
 }

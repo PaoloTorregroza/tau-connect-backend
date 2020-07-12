@@ -5,24 +5,26 @@ import * as bodyParser from "body-parser";
 import routes from "./routes/routes";
 import cors from 'cors';
 
-const init = () => createConnection().then( async () => {
-    const app = express();
-    // create express app
-    app.use(bodyParser.json());
-    app.use(cors());
+const init = createConnection().then( async () => {
+    try {
+        const app = express();
+        // create express app
+        app.use(bodyParser.json());
+        app.use(cors());
 
-    // register express routes from defined application routes
-    app.use("/", routes);
-    app.listen(3000);
+        // register express routes from defined application routes
+        app.use("/", routes);
+        const server = app.listen(3000);
 
-    console.log("Express server has started on port 3000.");
+        console.log("Express server has started on port 3000.");
 
-    return app;
+        return {app, server};
+    } catch (e) {
+        console.log(e);
+    }
+});
 
-}).catch(error => console.log(error));
-
-init();
-
+// For testing
 export default init;
 
 

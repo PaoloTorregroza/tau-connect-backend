@@ -3,7 +3,6 @@ import {Request, Response} from "express";
 import {User} from "../entity/User";
 import {InjectRepo} from '../utils/InjectRepo';
 import UserServices from "../services/UserServices";
-import { isNull } from "util";
 
 class UserController {
 
@@ -37,7 +36,8 @@ class UserController {
             await UserController.userRepository.remove(userToRemove);
             response.send({msg: "User removed"});
         } catch (e) {
-            response.status(400).end({msg: "Invalid ID"});
+            console.log(e);
+            response.status(400).send({msg: "Invalid ID"});
         }
     }
 
