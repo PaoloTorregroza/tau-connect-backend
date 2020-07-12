@@ -14,10 +14,10 @@ export class Comment {
     @Column({default: () => "CURRENT_TIMESTAMP"})
     created_at: Date;
 
-    @ManyToOne(type => Post, post => post.comments)
+    @ManyToOne(type => Post, post => post.comments, {onDelete: "CASCADE"})
     post: Post;
 
-    @ManyToOne(type => User, user => user.comments)
+    @ManyToOne(type => User, user => user.comments, {onDelete: "CASCADE"})
     user: User;
 
     @OneToMany(type => Like, like => like.comment)

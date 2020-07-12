@@ -80,7 +80,7 @@ class AuthServices {
         const userRepository = getRepository(User);
         const newUser = new User();
         newUser.name = name;
-	newUser.username = username;
+		newUser.username = username;
         newUser.password = password;
         newUser.email = email;
         newUser.register_at = new Date();

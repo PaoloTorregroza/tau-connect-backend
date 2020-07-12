@@ -14,7 +14,7 @@ export class Post {
     @Column({default: () => "CURRENT_TIMESTAMP"})
     created_at: Date;
 
-    @ManyToOne(type => User, user => user.posts)
+    @ManyToOne(type => User, user => user.posts, {onDelete: "CASCADE"})
     user: User;
 
     @OneToMany(type => Comment, comment => comment.post)
