@@ -1,8 +1,11 @@
+// Be sure you have at least on post and one user already on the database
+
+
 import chai, { should } from 'chai';
 import chaiHttp from 'chai-http';
 
 import init from '..';
-import { ChangeStream } from 'typeorm';
+import { response } from 'express';
 
 chai.use(chaiHttp);
 chai.should();
@@ -11,10 +14,12 @@ let app;
 let server;
 
 let testingPostId: string;
+let newTestingPostId: string;
 let token: string;
 let testEmail = "test@test.com";
 let testPassword = "test"
 let testingUserId: string;
+let followThis: string;
 
 describe("TESTS", () => {
     before(async function() {
@@ -64,6 +69,21 @@ describe("TESTS", () => {
         });
     });
 
+    // Change password
+    describe("POST auth/change-password", () => {
+        it("Should change the password from the user", (done) => {
+            chai.request(app)
+                .put("/auth/change-password")
+                .set("Authorization", `Bearer ${token}`)
+                .send({oldPassword: testPassword, newPassword: "123456"})
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.a("object");
+                    done();
+                })
+        })
+    })
+
     // POSTS TESTS
 
     // Get all posts
@@ -93,7 +113,7 @@ describe("TESTS", () => {
         });
     });
 
-    //Create a post (Requires auth)
+    //Create a post
     describe("POST /posts/", () => {
         it("Should create a post and get it data", (done) => {
             chai.request(app)
@@ -103,7 +123,7 @@ describe("TESTS", () => {
                 .end((err, response) => {
                     response.should.have.status(200);
                     response.body.should.be.a("object");
-                    testingPostId = response.body.data.id;
+                    newTestingPostId = response.body.data.id;
                     done();
                 });
         });
@@ -113,7 +133,62 @@ describe("TESTS", () => {
     describe("DELETE /posts/:id", () => {
         it("Should delete a post", (done) => {
             chai.request(app)
-                .delete(`/posts/${testingPostId}`)
+                .delete(`/posts/${newTestingPostId}`)
+                .set("Authorization", `Bearer ${token}`)
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.a("object");
+                    done();
+                });
+        });
+    });
+
+    // Like a post (Twice, cause the first time it creates a like and the second one removes it)
+    describe("PUT /posts/like/:id", () => {
+        it("Should like a post and return it", (done) => {
+            chai.request(app)
+                .put(`/posts/like/${testingPostId}`)
+                .set("Authorization", `Bearer ${token}`)
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.a("object");
+                    done();
+                });
+        });
+    });
+    describe("PUT /posts/like/:id", () => {
+        it("Should remove the like from the post", (done) => {
+            chai.request(app)
+                .put(`/posts/like/${testingPostId}`)
+                .set("Authorization", `Bearer ${token}`)
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.a("object");
+                    done();
+                });
+        });
+    });
+
+    // Post Comment
+    describe("PUT /posts/comment/:id", () => {
+        it("Should add a comment to a post", (done) => {
+            chai.request(app)
+                .put(`/posts/comment/${testingPostId}`)
+                .set("Authorization", `Bearer ${token}`)
+                .send({body: "Testing comments"})
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.a("object");
+                    done();
+                });
+        });
+    });
+
+    // Get comments from post
+    describe("GET /posts/comments/:id", () => {
+        it("Should get all the comments from a single post", (done) => {
+            chai.request(app)
+                .get(`/posts/comments/${testingPostId}`)
                 .set("Authorization", `Bearer ${token}`)
                 .end((err, response) => {
                     response.should.have.status(200);
@@ -124,6 +199,70 @@ describe("TESTS", () => {
     });
 
     // USERS TESTS
+
+    // Get all users
+    describe("GET /users", () => {
+        it("Should get all the users", (done) => {
+            chai.request(app)
+                .get("/users")
+                .set("Authorization", `Bearer ${token}`)
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.a("object");
+                    followThis = response.body.data[0].id;
+                    done();
+                });
+        });
+    });
+
+    // Get one user
+    describe("GET /users/:id", () => {
+        it("Should get a single user", (done) => {
+            chai.request(app)
+                .get(`/users/${testingUserId}`)
+                .set("Authorization", `Bearer ${token}`)
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.a("object");
+                    done();
+                });
+        });
+    });
+
+    // Update user
+    describe("PUT /users/:id", () => {
+        it("Should update the user data", (done) => {
+            chai.request(app)
+                .put(`/users/${testingUserId}`)
+                .set("Authorization", `Bearer ${token}`)
+                .send({
+                    name: "TestUser", 
+                    username: "@Tester", 
+                    email: "test@tester.es", 
+                    activated: false
+                })
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.a("object");
+                    done();
+                });
+        });
+    });
+
+    // Follow someone
+    describe("PUT /users/follow", () => {
+        it("Should follow a user", (done) => {
+            chai.request(app)
+                .put(`/users/follow`)
+                .set("Authorization", `Bearer ${token}`)
+                .send({userId: followThis})
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.a("object");
+                    done();
+                });
+        });
+    });
 
     //Delete user
     describe("DELETE /users/:id", () => {

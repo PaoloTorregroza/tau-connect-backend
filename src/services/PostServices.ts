@@ -107,16 +107,15 @@ class PostServices {
         let postOwner: User;
 
         try {
-            postToRemove = await PostServices.postRepository.findOneOrFail(request.params.id);
-            postOwner = await PostServices.userRepository.findOneOrFail({relations: ["posts"]})
+            postToRemove = await PostServices.postRepository.findOneOrFail(request.params.id, {relations: ["user"]});
+            postOwner = postToRemove.user;
             token = decodeJwt(<string>request.headers.authorization);
-            user = await PostServices.userRepository.findOne(token.id);
         } catch (e) {
             response.data = {msg: "Invalid data"};
             return response;
         }
 
-        if (user.id != postOwner.id) {
+        if (token.id != postOwner.id) {
             response.status = 401;
             response.data = {msg: "You can't remove other people posts"};
             return response;

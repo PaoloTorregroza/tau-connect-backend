@@ -12,7 +12,7 @@ class UserController {
     static all = async(request: Request, response: Response) => {
         const results = await UserController.userRepository.find();
         results.forEach(e => delete e.password);
-        response.send(results);
+        response.send({data: results});
     }
 
     static one = async (request: Request, response: Response) => {
