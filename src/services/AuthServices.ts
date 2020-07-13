@@ -91,7 +91,7 @@ class AuthServices {
         	const user = userRepository.create(newUser);
         	results = await userRepository.save(user);
 		} catch (e) {
-			response.data = {msg: "Error creating user, email already exists"};
+			response.data = {msg: "Error creating user, email or username already exists"};
 			return response;
 		}
 		delete results.password;

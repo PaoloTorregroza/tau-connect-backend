@@ -6,6 +6,7 @@ import config from '../config/config';
 import {Like} from "./Like";
 
 @Unique(["email"])
+@Unique(["username"])
 @Entity()
 export class User {
 
@@ -15,7 +16,7 @@ export class User {
     @Column()
     name: string;
 
-    @Column()
+    @Column({name: "username"})
     username: string;
 
     @Column({name: "email"})

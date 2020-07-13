@@ -35,7 +35,7 @@ class UserServices {
             response.data = {msg: "User updated", data: results};
         } catch(e) {
             response.status = 500;
-            response.data = {msg: "Error updating user"};
+            response.data = {msg: "Error updating user, maybe username or email is already in use"};
         }
         return response;
     }
