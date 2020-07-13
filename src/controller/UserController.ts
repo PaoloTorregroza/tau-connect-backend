@@ -20,7 +20,7 @@ class UserController {
             const results = await UserController.userRepository.findOne(request.params.id);
             if (results == undefined) throw new Error("NoResults");
             delete results.password;
-            response.send(results);        
+            response.send({data: results});        
         } catch (e) {
             if (e.message == "NoResults") {
                 response.status(404).send({msg: "User don't exists"});
