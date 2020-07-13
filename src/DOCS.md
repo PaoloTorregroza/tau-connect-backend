@@ -231,3 +231,244 @@ Return:
     msg: "Error info"
 }
 ```
+
+### Like post (PUT /like/:id)
+Leave a like in the post whit the ``id``
+
+Requrie an ``id`` in the url
+
+Return: 
+```js
+// Status 200
+{
+  "data": {
+    "user": {
+      "id": "d695fe9d-cad7-4c2b-822b-91df2596049e",
+      "name": "Paolo",
+      "username": "@Paolinsky",
+      "email": "paolodydtorregrosa@gmail.com",
+      "activated": true,
+      "register_at": "2020-07-12T16:48:11.579Z"
+    },
+    "post": {
+      "id": "6c04c8d5-b658-42ef-aa29-fe3ad89e500c",
+      "body": "El primer post de esta red social",
+      "created_at": "2020-07-13T18:22:41.314Z"
+    },
+    // This is the id like
+    "id": "e6c5a696-bfa6-4510-a3b9-1402368eafb5"
+  }
+}
+// On fail returns
+{
+    msg: "Error info"
+}
+```
+
+### Post comment (PUT /comment/:id)
+Leave a comment in the post whit the ``id``
+
+Require:
+```js
+{
+	"body": "This isn't the first post"
+}
+```
+Return:
+```js
+//Status 200
+{
+  "data": {
+    "user": {
+      "id": "b9ddd74a-c052-4f09-adfb-973344a6e9d2",
+      "name": "Paolo",
+      "username": "@Paolinsky",
+      "email": "paolodydtorregrosa@gmail.com",
+      "activated": true,
+      "register_at": "2020-07-12T16:44:01.944Z"
+    },
+    "body": "This isn't the first post",
+    "created_at": "2020-07-12T16:44:45.973Z",
+    "post": {
+      "id": "96d27b48-66ce-42b9-966e-ea18b7c0a940",
+      "body": "El primer post de esta red social",
+      "created_at": "2020-07-12T16:44:15.906Z"
+    },
+    // The comment id
+    "id": "d7962953-fc4f-4ec3-99ea-89b7f7d640f4"
+  }
+}
+// On fail returns
+{
+    msg: "Error info"
+}
+```
+
+### Get comments (GET: /comments/:id)
+Get the comments of the post whit ``id``
+
+Require an ``id`` in the url
+
+Return:
+```js
+// Status 200
+{
+  "data": [
+    {
+      "id": "32833f03-fc65-4838-9fd6-90a17de35586",
+      "body": "This is a single comment",
+      "created_at": "2020-07-09T21:36:09.791Z"
+    },
+    {
+      "id": "32833f03-fc65-4838-9fd6-90a17de35586",
+      "body": "This is a single comment",
+      "created_at": "2020-07-09T21:36:09.791Z"
+    }
+  ]
+}
+// On fail returns
+{
+    msg: "Error info"
+}
+```
+- ## Users (/users)
+  
+### All (GET: /)
+Get all users, requires auth
+
+```js
+// Status 200
+{
+  "data": [
+    {
+      "id": "a6f46396-9b44-4637-bfba-7efe05bf736a",
+      "name": "Paolo",
+      "username": "@Paolinsky",
+      "email": "paolodydtorregrosa@gmail.com",
+      "activated": true,
+      "register_at": "2020-07-13T19:55:12.412Z"
+    },
+    {
+      "id": "3760a78d-ec2b-4ac2-b0cc-8d401468ab2a",
+      "name": "Paolinsky freelancer",
+      "username": "@soft_paolinsky",
+      "email": "paolinskypdtn@outlook.com",
+      "activated": true,
+      "register_at": "2020-07-13T19:56:00.360Z"
+    }
+  ]
+}
+// On fail returns
+{
+    msg: "Error info"
+}
+```
+
+### One (GET: /:id)
+Get one user, requires auth and an ``id`` in the url
+```js
+// Status 200
+"data": {
+  "id": "d57b7da6-f94d-45bc-9bf4-0f978fe1c075",
+  "name": "Test",
+  "username": "@Test",
+  "email": "test@test.com",
+  "activated": true,
+  "register_at": "2020-07-12T03:06:09.798Z"
+}
+// On fail returns
+{
+    msg: "Error info"
+}
+```
+
+### Update user (PUT: /:id)
+Update an user, if email or username already exists return an error
+
+Require: 
+```js
+// Rrequire auth
+
+{
+  "name": "John",
+  "username": "Doe",
+  "activated": true
+}
+```
+
+Return:
+```js
+// Status 200
+{
+  "msg": "User updated",
+  "data": {
+    "id": "a6f46396-9b44-4637-bfba-7efe05bf736a",
+    "name": "Paolinsky",
+    "username": "@Paolinsky",
+    "email": "paolodydtorregrosa@gmail.com",
+    "activated": true,
+    "register_at": "2020-07-13T19:55:12.412Z"
+  }
+}
+// On fail returns
+{
+    msg: "Error info"
+}
+```
+
+### Follow (PUT /follow/)
+The loged user follows the given user
+
+Require:
+```js
+// Require auth
+{
+  "userId": "29c7e1b2-2b76-4dcb-a46e-3be6b35e8253"
+}
+```
+Return:
+```js
+
+// The user Lore now is followed by Paolo
+// Status 200
+{
+  "data": {
+    "id": "29c7e1b2-2b76-4dcb-a46e-3be6b35e8253",
+    "name": "Lore",
+    "username": "@cute",
+    "email": "cute@gmail.com",
+    "activated": true,
+    "register_at": "2020-07-13T19:23:37.538Z",
+    "followers": [
+      {
+        "id": "d695fe9d-cad7-4c2b-822b-91df2596049e",
+        "name": "Paolo",
+        "username": "@Paolinsky",
+        "email": "paolodydtorregrosa@gmail.com",
+        "activated": true,
+        "register_at": "2020-07-12T16:48:11.579Z"
+      }
+    ]
+  }
+}
+// On fail returns
+{
+    msg: "Error info"
+}
+```
+
+### Remove user (DELETE: /:id)
+Removes the given user. Require auth.
+
+Return:
+```js
+{
+  "msg": "User removed"
+}
+```
+
+## Authorization
+The routes that require auth must send in the header the token.
+```
+"Authorization": `Bearer ${token}`
+```
