@@ -235,10 +235,11 @@ Return:
 ### Like post (PUT /like/:id)
 Leave a like in the post whit the ``id``
 
-Requrie an ``id`` in the url
+Requrie an ``id`` in the url and auth
 
 Return: 
 ```js
+
 // Status 200
 {
   "data": {
