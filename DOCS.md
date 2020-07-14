@@ -292,6 +292,123 @@ Return:
     msg: "Error info"
 }
 ```
+- ## Comments (/comments)
+  
+### One (GET: /:id)
+Get a single comment
+
+Return:
+```js
+// Status 200
+{
+  "data": {
+    "id": "8b96fb70-dc59-4638-94b8-1fea9d540d4a",
+    "body": "This is a comment",
+    "created_at": "2020-07-14T05:21:47.922Z",
+    "user": {
+      "id": "a6f46396-9b44-4637-bfba-7efe05bf736a",
+      "name": "Paolinsky",
+      "username": "@Paolinsky",
+      "email": "paolodydtorregrosa@gmail.com",
+      "activated": true,
+      "register_at": "2020-07-13T19:55:12.412Z"
+    }
+  }
+}
+// On fail returns
+{
+    msg: "Error info"
+}
+```
+
+### Post comment (POST: /:id)
+You must specify a  post to comment inside the url ``id``
+
+Require:
+```js
+// Require auth
+{
+  "body": "This is a comment"
+}
+```
+Return:
+```js
+// Status 200
+{
+  "data": {
+    "body": "This is a comment",
+    "post": {
+      "id": "895b6a8c-8df1-4bf4-8d73-df1cb095753d",
+      "body": "El primer post de esta red social",
+      "created_at": "2020-07-14T00:20:25.990Z"
+    },
+    "user": {
+      "id": "a6f46396-9b44-4637-bfba-7efe05bf736a",
+      "name": "Paolinsky",
+      "username": "@Paolinsky",
+      "email": "paolodydtorregrosa@gmail.com",
+      "activated": true,
+      "register_at": "2020-07-13T19:55:12.412Z"
+    },
+    "id": "8b96fb70-dc59-4638-94b8-1fea9d540d4a",
+    "created_at": "2020-07-14T05:21:47.922Z"
+  }
+}
+// On fail returns
+{
+    msg: "Error info"
+}
+```
+
+### Like comment (PUT: /like/:id)
+Likes the comment with the ``id`` in the url
+
+Require auth.
+
+Return:
+```js
+// Status 200
+{
+  "data": {
+    "user": {
+      "id": "a6f46396-9b44-4637-bfba-7efe05bf736a",
+      "name": "Paolinsky",
+      "username": "@Paolinsky",
+      "email": "paolodydtorregrosa@gmail.com",
+      "activated": true,
+      "register_at": "2020-07-13T19:55:12.412Z"
+    },
+    "comment": {
+      "id": "8b96fb70-dc59-4638-94b8-1fea9d540d4a",
+      "body": "This is a comment",
+      "created_at": "2020-07-14T05:21:47.922Z"
+    },
+    "id": "3d63cab9-caa4-4a35-8d0e-a67bbc232628"
+  }
+}
+// On fail returns
+{
+    msg: "Error info"
+}
+```
+
+### Delete comment (DELETE: /:id)
+Delete the comment with ``id``
+
+Require auth.
+
+Return: 
+```js
+// Status 200
+{
+  "msg": "Comment removed"
+}
+// On fail returns
+{
+    msg: "Error info"
+}
+```
+
 - ## Users (/users)
   
 ### All (GET: /)
@@ -425,6 +542,51 @@ Return:
 ```js
 {
   "msg": "User removed"
+}
+```
+
+- ## Likes (/likes)
+### Get post likes (GET: /post/:id)
+Get the likes of the post with :id
+
+Return: 
+```js
+// Status 200
+{
+  "data": [
+    {
+      "id": "b2caabb8-3f14-4840-9c4d-62a786857e0d"
+    },
+    {
+      "id": "44dec95b-427a-4479-82dd-82c5bdd71013"
+    }
+  ]
+}
+// On fail returns 
+{
+    msg: "Error info"
+}
+```
+
+### Get comment likes (GET: /comment/:id)
+Get the likes of the comment with :id
+
+Return: 
+```js
+// Status 200
+{
+  "data": [
+    {
+      "id": "b2caabb8-3f14-4840-9c4d-62a786857e0d"
+    },
+    {
+      "id": "44dec95b-427a-4479-82dd-82c5bdd71013"
+    }
+  ]
+}
+// On fail returns 
+{
+    msg: "Error info"
 }
 ```
 
