@@ -168,40 +168,6 @@ class PostServices {
         }
     }
 
-    static async comment(request: Request) {
-        let response: responseDefinition = {
-            status: 400,
-            data: {}
-        }
-        const token = decodeJwt(<string>request.headers.authorization);
-        const userId = token.id;
-
-        const comment = new Comment();
-        let post: Post;
-        let user: User;
-        try {
-            post = await PostServices.postRepository.findOne(request.params.id);
-            user = await PostServices.userRepository.findOne(userId);
-            if (!request.body.body || typeof request.body.body != "string") {
-                throw new Error("Invalid body");
-            }
-        } catch (e) {
-            response.data = {msg: "Invalid data"};
-            return response;
-        }
-
-        comment.user = user;
-        comment.body = request.body.body;
-        comment.created_at = new Date()
-        comment.post = post;
-
-        const results = await PostServices.commentRepository.save(comment);
-        delete results.user.password;
-        response.status = 200;
-        response.data = {data: results};
-        return response;
-    }
-
     static async getComments(request: Request) {
         let response: responseDefinition = {
             status: 400,

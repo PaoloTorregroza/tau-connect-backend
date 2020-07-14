@@ -265,45 +265,6 @@ Return:
 }
 ```
 
-### Post comment (PUT /comment/:id)
-Leave a comment in the post whit the ``id``
-
-Require:
-```js
-{
-	"body": "This isn't the first post"
-}
-```
-Return:
-```js
-//Status 200
-{
-  "data": {
-    "user": {
-      "id": "b9ddd74a-c052-4f09-adfb-973344a6e9d2",
-      "name": "Paolo",
-      "username": "@Paolinsky",
-      "email": "paolodydtorregrosa@gmail.com",
-      "activated": true,
-      "register_at": "2020-07-12T16:44:01.944Z"
-    },
-    "body": "This isn't the first post",
-    "created_at": "2020-07-12T16:44:45.973Z",
-    "post": {
-      "id": "96d27b48-66ce-42b9-966e-ea18b7c0a940",
-      "body": "El primer post de esta red social",
-      "created_at": "2020-07-12T16:44:15.906Z"
-    },
-    // The comment id
-    "id": "d7962953-fc4f-4ec3-99ea-89b7f7d640f4"
-  }
-}
-// On fail returns
-{
-    msg: "Error info"
-}
-```
-
 ### Get comments (GET: /comments/:id)
 Get the comments of the post whit ``id``
 

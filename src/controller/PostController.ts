@@ -33,11 +33,6 @@ class PostController {
         response.status(responseData.status).send(responseData.data);
     }
 
-    static comment = async (request: Request, response: Response) => {
-        const responseData = await PostServices.comment(request);
-        response.status(responseData.status).send(responseData.data);
-    }
-
     static getComments = async (request: Request, response: Response) => {
         const responseData = await PostServices.getComments(request);
         response.status(responseData.status).send(responseData.data);
