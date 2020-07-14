@@ -11,6 +11,16 @@ class LikeController {
         const responseData = await LikeServices.getPostLikes(request);
         response.status(responseData.status).send(responseData.data);
     }
+
+	static isPostLiked = async (request: Request, response: Response) => {
+		const responseData = await LikeServices.isLiked(request, "post");
+		response.status(responseData.status).send(responseData.data);
+	}
+
+	static isCommentLiked = async (request: Request, response: Response) => {
+		const responseData = await LikeServices.isLiked(request, "comment")
+		response.status(responseData.status).send(responseData.data);
+	}
 }
 
 export default LikeController;

@@ -1,11 +1,8 @@
 // Be sure you have at least on post and one user already on the database
-
-
-import chai, { should } from 'chai';
+import chai, {should} from 'chai';
 import chaiHttp from 'chai-http';
 
 import init from '..';
-import { response } from 'express';
 
 chai.use(chaiHttp);
 chai.should();
@@ -20,6 +17,7 @@ let testEmail = "test@test.com";
 let testPassword = "test"
 let testingUserId: string;
 let followThis: string;
+let testingCommentId: string;
 
 describe("TESTS", () => {
     before(async function() {
@@ -169,21 +167,6 @@ describe("TESTS", () => {
         });
     });
 
-    // Post Comment
-    describe("PUT /posts/comment/:id", () => {
-        it("Should add a comment to a post", (done) => {
-            chai.request(app)
-                .put(`/posts/comment/${testingPostId}`)
-                .set("Authorization", `Bearer ${token}`)
-                .send({body: "Testing comments"})
-                .end((err, response) => {
-                    response.should.have.status(200);
-                    response.body.should.be.a("object");
-                    done();
-                });
-        });
-    });
-
     // Get comments from post
     describe("GET /posts/comments/:id", () => {
         it("Should get all the comments from a single post", (done) => {
@@ -197,6 +180,65 @@ describe("TESTS", () => {
                 });
         });
     });
+
+	// COMMENTS TESTS
+	
+	// Post comment 
+	describe("POST /comments/:id", () => {
+		it("Should create a new comment", (done) => {
+			chai.request(app)
+				.post(`/comments/${testingPostId}`)
+				.set("Authorization", `Bearer ${token}`)
+				.send({body: "Testing comment"})
+				.end((err, response) => {
+					response.should.have.status(200);
+					response.body.should.be.a("object");
+					testingCommentId = response.body.data.id;
+					done();
+				});
+		});
+	});
+
+	// Get single comment
+	describe("GET /comments/:id", () => {
+		it("Should return a single comment", (done) => {
+			chai.request(app)
+				.get(`/comments/${testingCommentId}`)
+				.end((err, response) => {
+					response.should.have.status(200);
+					response.body.should.be.a("object");
+					done();
+				});
+		});
+	});
+
+	// Like comment
+	describe("PUT /comments/like/:id", () => {
+		it("Should add a like to comment", (done) => {
+			chai.request(app)
+				.put(`/comments/like/${testingCommentId}`)
+				.set("Authorization", `Bearer ${token}`)
+				.end((err, response) => {
+					response.should.have.status(200);
+					response.body.should.be.a("object");
+					done();
+				})
+		});
+	});
+
+	// Delete comment 
+	describe("DELETE /comments/:id", () => {
+		it("Should remove the comment", (done) => {
+			chai.request(app)
+				.delete(`/comments/${testingCommentId}`)
+				.set("Authorization", `Bearer ${token}`)
+				.end((err, response) => {
+					response.should.have.status(200);
+					response.body.should.be.a("object");
+					done();
+				});
+		});
+	});
 
     // USERS TESTS
 

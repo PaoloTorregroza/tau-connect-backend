@@ -590,6 +590,18 @@ Return:
 }
 ```
 
+### Is liked (GET: /comment/:entity/:user or GET: /post/:entity/:user)
+``:entity`` Is the id of the post or the comment, ``:user`` is an user id
+
+Return:
+```js
+// Status 200
+{
+	"data": true // or false if the post isn't liked
+}
+```
+
+
 ## Authorization
 The routes that require auth must send in the header the token.
 ```

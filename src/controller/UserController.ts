@@ -31,14 +31,8 @@ class UserController {
     }
 
     static remove = async (request: Request, response: Response) => {
-        try {
-            let userToRemove = await UserController.userRepository.findOne(request.params.id);
-            await UserController.userRepository.remove(userToRemove);
-            response.send({msg: "User removed"});
-        } catch (e) {
-            console.log(e);
-            response.status(400).send({msg: "Invalid ID"});
-        }
+		const responseData = await UserServices.delete(request);
+		response.status(responseData.status).send(responseData.data);
     }
 
     static update = async (request: Request, response: Response) => {

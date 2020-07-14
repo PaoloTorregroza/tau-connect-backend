@@ -16,7 +16,25 @@ class UserServices {
     @InjectRepo(User)
     private static userRepository: Repository<User>;
 
-    static async update(request: Request) {
+	static async delete(request: Request) {
+		let response: responseDefinition = {
+			status: 401,
+			data: {}
+		}
+
+		const userId = request.params.id;
+		const requestId = decodeJwt(<string>request.headers.authorization).id;
+		if (userId != requestId) {
+			response.data = {msg: "You can't delete other users"}
+		} else {
+			await UserServices.userRepository.delete(userId);
+			response.status = 200;
+			response.data = {msg: "User deleted"}
+		}
+		return response;
+	}
+
+	static async update(request: Request) {
         let response: responseDefinition = {
             status: 401,
             data: {}
