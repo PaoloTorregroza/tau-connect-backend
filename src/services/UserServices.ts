@@ -59,7 +59,7 @@ class UserServices {
     }
 
     static async follow(request: Request) {
-        let response: responseDefinition = {
+		let response: responseDefinition = {
             status: 400,
             data: {}
         }
@@ -68,23 +68,35 @@ class UserServices {
         let user: User;
         let follower: User;
         try {
-            follower = await UserServices.userRepository.findOne(followerId);
-            user = await UserServices.userRepository.findOne(request.body.userId);
+            follower = await UserServices.userRepository.findOne(followerId, {relations: ["followers"]});
+            user = await UserServices.userRepository.findOne(request.body.userId, {relations: ["followers"]});
         } catch (e) {
             response.data = {msg: "Invalid ID"};
             return response;
         }
-
         if (!user.followers) user.followers = [];
         
-        user.followers.push(follower);
-        
-        const results = await UserServices.userRepository.save(user);
-        delete results.password
-        results.followers.forEach(e => delete e.password);
-        response.status = 200;
-        response.data = {data: results};
-        return response;
+        const alreadyFollowed = user.followers.some(user => user.id === follower.id);
+        if (!alreadyFollowed) {
+            user.followers.push(follower);
+   
+            const results = await UserServices.userRepository.save(user);
+            delete results.password
+            results.followers.forEach(e => delete e.password);
+            response.status = 200;
+            response.data = {data: results, msg: "User followed"};
+            return response;
+        } else {
+            const followerIndex = user.followers.findIndex(user => user.id === follower.id);
+            user.followers.splice(followerIndex, 1);
+
+            const results = await UserServices.userRepository.save(user);
+            delete results.password
+            results.followers.forEach(e => delete e.password);
+            response.status = 200;
+            response.data = {data: results, msg: "Follower removed"}
+            return response;
+        }
     }
 }
 

@@ -30,6 +30,22 @@ class UserController {
         }
     }
 
+	static followers = async (request: Request, response: Response) => {
+		try {
+			const results = await UserController.userRepository.findOneOrFail(
+					request.params.id,
+					{relations: ["followers"]}
+				);
+			results.followers.forEach(e => {
+				delete e.password;
+			});
+			const responseData = {data: results.followers}
+			response.status(200).send(responseData);
+		} catch (e) {
+			response.status(500).send({msg: "Error getting followers", data: []});
+		}
+	}
+
     static remove = async (request: Request, response: Response) => {
 		const responseData = await UserServices.delete(request);
 		response.status(responseData.status).send(responseData.data);
