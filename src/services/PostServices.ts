@@ -31,13 +31,13 @@ class PostServices {
             data: {}
         }
         
-        try {
-            const posts = await PostServices.postRepository.find({relations: ["user", "comments"]});
+		try {
+
+			const posts = await PostServices.postRepository.find({relations: ["user", "comments"], order: {created_at: "DESC"}});
  
             posts.forEach(post => {
                 delete post.user.password;
             })
-			posts.sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
             response.data = {data: posts};
         } catch (e) {
             console.log(e);
