@@ -9,7 +9,7 @@ import {User} from '../entity/User';
 interface responseDefinition {
 	status: number;
 	data: {
-		token?: string; 
+		token?: string;
 		msg?: string;
 		data?: User;
 	}
@@ -50,7 +50,7 @@ class AuthServices {
         if (user != undefined) {
             const token = sign(
                 {id: user.id, email: user.email},
-                config.jwtSecret, 
+                config.jwtSecret,
                 {expiresIn: "6h"}
             );
 
@@ -62,7 +62,7 @@ class AuthServices {
 			};
 
 			return response;
-        }		
+        }
 	}
 
 	static async register(request: Request) {
@@ -85,7 +85,7 @@ class AuthServices {
         newUser.email = email;
         newUser.register_at = new Date();
         newUser.activated = true;  // [TODO] Make email acount verification
-		
+
 		let results: User;
 		try {
         	const user = userRepository.create(newUser);
@@ -133,7 +133,7 @@ class AuthServices {
 
         user.password = hashSync(newPassword, config.saltRounds);
 		await userRepository.save(user);
-		
+
 		response.status = 200;
 		response.data = {msg: "Password changed"};
 		return response

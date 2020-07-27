@@ -54,8 +54,11 @@ class PostServices {
             data: {}
         }
         try {
-            const results = await PostServices.postRepository.findOneOrFail(request.params.id, {relations: ["user"]});
+            const results = await PostServices.postRepository.findOneOrFail(request.params.id, {relations: ["user", "comments", "comments.user"]});
             delete results.user.password;
+			results.comments.forEach(e => {
+				delete e.user.password;
+			});
             response.status = 200;
             response.data = {data: results};
             return response;

@@ -84,7 +84,7 @@ class LikeServices {
 
 				const post = await LikeServices.postRepository.findOneOrFail(elementId);
 				for (let i = 0; i < user.likes.length; i++) {
-					if (post.id == user.likes[i].post.id) {
+					if (user.likes[i].post !== null && post.id == user.likes[i].post.id) {
 						response.status = 200;
 						response.data = {data: true};
 					}

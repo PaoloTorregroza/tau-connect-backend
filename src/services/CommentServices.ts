@@ -96,11 +96,18 @@ class CommentServices {
         try {
             like.user = await CommentServices.userRepository.findOneOrFail(userId);
             like.comment = await CommentServices.commentRepository.findOneOrFail(commentId);
-            
-            const results = await CommentServices.likeRepository.save(like);
-            delete results.user.password;
-            response.status = 200;
-            response.data = {data: results};
+            let oldLike = await CommentServices.likeRepository.findOne({user: like.user, comment: like.comment})
+
+            if (!oldLike) {
+                const results = await CommentServices.likeRepository.save(like);
+                delete results.user.password;
+                response.status = 200;
+                response.data = {data: results};
+            } else {
+                await CommentServices.likeRepository.remove(oldLike);
+                response.status = 200;
+                response.data = {msg: "Like removed"};
+            }
         } catch (e) {
             response.data = {msg: "Error whit the like"};
         }

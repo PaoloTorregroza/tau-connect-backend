@@ -4,6 +4,7 @@ import express from "express";
 import * as bodyParser from "body-parser";
 import routes from "./routes/routes";
 import cors from 'cors';
+import morgan from 'morgan';
 
 const init = createConnection().then( async () => {
     try {
@@ -11,6 +12,7 @@ const init = createConnection().then( async () => {
         // create express app
         app.use(bodyParser.json());
         app.use(cors());
+        app.use(morgan("common"))
 
         // register express routes from defined application routes
         app.use("/", routes);
@@ -26,5 +28,3 @@ const init = createConnection().then( async () => {
 
 // For testing
 export default init;
-
-
