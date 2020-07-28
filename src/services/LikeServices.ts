@@ -38,6 +38,7 @@ class LikeServices {
             response.data = {data: results.likes};
         } catch (e) {
             response.data = {msg: "Error getting likes"};
+            console.log(e);
         }
 
         return response;
@@ -68,7 +69,7 @@ class LikeServices {
 	// elementType can be "comment" or "post"
 	static async isLiked(request: Request, elementType: String) {
 		let response: responseDefinition = {
-			status: 200,
+			status: 500,
 			data: {data: false}
 		}
 

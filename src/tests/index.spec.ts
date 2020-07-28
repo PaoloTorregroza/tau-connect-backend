@@ -225,21 +225,6 @@ describe("TESTS", () => {
 				})
 		});
 	});
-
-	// Delete comment 
-	describe("DELETE /comments/:id", () => {
-		it("Should remove the comment", (done) => {
-			chai.request(app)
-				.delete(`/comments/${testingCommentId}`)
-				.set("Authorization", `Bearer ${token}`)
-				.end((err, response) => {
-					response.should.have.status(200);
-					response.body.should.be.a("object");
-					done();
-				});
-		});
-	});
-
     // USERS TESTS
 
     // Get all users
@@ -306,6 +291,48 @@ describe("TESTS", () => {
         });
     });
 
+
+
+    // LIKES TESTS
+    describe("GET /likes/post/:id", () => {
+        it("Should get post likes", (done) => {
+            chai.request(app)
+                .get(`/likes/post/${testingPostId}`)
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.a("object");
+                    done();
+                })
+        })
+    });
+
+    describe("GET /likes/comment/:id", () => {
+        it("Should get comment likes", (done) => {
+            chai.request(app)
+                .get(`/likes/comment/${testingCommentId}`)
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.a("object");
+                    done();
+                })
+        });
+    });
+
+    // Remove created elements
+    // Delete comment
+    describe("DELETE /comments/:id", () => {
+        it("Should remove the comment", (done) => {
+            chai.request(app)
+                .delete(`/comments/${testingCommentId}`)
+                .set("Authorization", `Bearer ${token}`)
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.a("object");
+                    done();
+                });
+        });
+    });
+
     //Delete user
     describe("DELETE /users/:id", () => {
         it("Should delete a user", (done) => {
@@ -318,5 +345,6 @@ describe("TESTS", () => {
                     done();
                 })
         })
-    })
+    });
+
 });
