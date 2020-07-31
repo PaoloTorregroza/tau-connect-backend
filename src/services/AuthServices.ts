@@ -6,15 +6,6 @@ import {decodeJwt} from '../utils/decodeJwt';
 import {hashSync} from 'bcrypt';
 import {User} from '../entity/User';
 
-interface responseDefinition {
-	status: number;
-	data: {
-		token?: string;
-		msg?: string;
-		data?: User;
-	}
-}
-
 class AuthServices {
 	static async login(request: Request) {
 		let response: responseDefinition = {

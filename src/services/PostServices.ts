@@ -7,14 +7,6 @@ import { InjectRepo } from "../utils/InjectRepo";
 import { Request } from "express";
 import { decodeJwt } from "../utils/decodeJwt";
 
-interface responseDefinition {
-    status: number;
-    data: {
-        msg?: string;
-        data?;
-    }
-}
-
 class PostServices {
     @InjectRepo(Post)
     private static postRepository: Repository<Post>;

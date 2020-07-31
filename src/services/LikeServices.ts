@@ -6,14 +6,6 @@ import { Comment } from "../entity/Comment";
 import { Repository } from "typeorm";
 import {User} from "../entity/User";
 
-interface responseDefinition {
-    status: number,
-    data: {
-        msg?: string,
-        data? 
-    }
-}
-
 class LikeServices {
     @InjectRepo(Post)
     private static postRepository: Repository<Post>;

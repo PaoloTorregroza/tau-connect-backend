@@ -7,14 +7,6 @@ import { User } from "../entity/User";
 import { Post } from "../entity/Post";
 import { Like } from "../entity/Like";
 
-interface responseDefinition {
-    status: number;
-    data: {
-        msg?: string;
-        data?;
-    }
-}
-
 class CommentServices {
     @InjectRepo(Comment)
     private static commentRepository: Repository<Comment>;

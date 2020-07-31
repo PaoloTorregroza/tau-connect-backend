@@ -4,14 +4,6 @@ import {decodeJwt} from '../utils/decodeJwt';
 import { InjectRepo } from '../utils/InjectRepo';
 import { Repository } from 'typeorm';
 
-interface responseDefinition {
-	status: number;
-	data: {
-		msg?: string;
-		data?: User;
-	}
-}
-
 class UserServices {
     @InjectRepo(User)
     private static userRepository: Repository<User>;

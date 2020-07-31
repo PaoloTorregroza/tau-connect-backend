@@ -11,6 +11,9 @@
       "emitDecoratorMetadata": true,
       "esModuleInterop": true,
       "experimentalDecorators": true,
-      "sourceMap": true
+      "sourceMap": true,
+      "typeRoots": [
+         "src/@types"
+      ]
    }
 }
