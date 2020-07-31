@@ -5,27 +5,27 @@ import { InjectRepo } from '../utils/InjectRepo';
 import { Repository } from 'typeorm';
 
 class UserServices {
-    @InjectRepo(User)
-    private static userRepository: Repository<User>;
+	@InjectRepo(User)
+	private static userRepository: Repository<User>;
 
-    static async one(request: Request, relations: string[] = []) {
-        let response: responseDefinition = {
-            status: 404,
-            data: {}
-        }
+	static async one(request: Request, relations: string[] = []) {
+		let response: responseDefinition = {
+			status: 404,
+			data: {}
+		}
 
-        const userId = request.params.id;
-        try {
-            const results = await UserServices.userRepository.findOne(userId, {relations: relations});
-            response.data = {data: results};
-            response.status = 200;
-        } catch (e) {
-            response.status = 400;
-            response.data = {msg: "Error with the id"};
-        }
+		const userId = request.params.id;
+		try {
+			const results = await UserServices.userRepository.findOne(userId, {relations: relations});
+			response.data = {data: results};
+			response.status = 200;
+		} catch (e) {
+			response.status = 400;
+			response.data = {msg: "Error with the id"};
+		}
 
-        return response;
-    }
+		return response;
+	}
 
 	static async delete(request: Request) {
 		let response: responseDefinition = {

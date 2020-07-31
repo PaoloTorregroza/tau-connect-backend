@@ -61,7 +61,7 @@ class LikeServices {
 	// elementType can be "comment" or "post"
 	static async isLiked(request: Request, elementType: String) {
 		let response: responseDefinition = {
-			status: 500,
+			status: 200,
 			data: {data: false}
 		}
 
@@ -78,8 +78,8 @@ class LikeServices {
 				const post = await LikeServices.postRepository.findOneOrFail(elementId);
 				for (let i = 0; i < user.likes.length; i++) {
 					if (user.likes[i].post !== null && post.id == user.likes[i].post.id) {
-						response.status = 200;
 						response.data = {data: true};
+                        break;
 					}
 				}
 			}
@@ -93,12 +93,13 @@ class LikeServices {
 				const comment = await LikeServices.commentRepository.findOneOrFail(elementId);
 				for (let i = 0; i < user.likes.length; i++) {
 					if (user.likes[i].comment != null && comment.id == user.likes[i].comment.id) {
-						response.status = 200;
 						response.data = {data: true};
+                        break;
 					}
 				}
 			}
 		} catch (e) {
+            response.status = 500;
 			response.data = {data: false};
 			console.log(e);
 		}
