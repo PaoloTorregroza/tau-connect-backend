@@ -16,34 +16,13 @@ class UserController {
     }
 
     static one = async (request: Request, response: Response) => {
-        try {
-            const results = await UserController.userRepository.findOne(request.params.id);
-            if (results == undefined) throw new Error("NoResults");
-            delete results.password;
-            response.send({data: results});        
-        } catch (e) {
-            if (e.message == "NoResults") {
-                response.status(404).send({msg: "User don't exists"});
-            } else {
-                response.status(400).send({msg: "Invalid ID"});
-            }
-        }
+        const responseData = await UserServices.one(request);
+        response.status(responseData.status).send(responseData.data);
     }
 
 	static followers = async (request: Request, response: Response) => {
-		try {
-			const results = await UserController.userRepository.findOneOrFail(
-					request.params.id,
-					{relations: ["followers"]}
-				);
-			results.followers.forEach(e => {
-				delete e.password;
-			});
-			const responseData = {data: results.followers}
-			response.status(200).send(responseData);
-		} catch (e) {
-			response.status(500).send({msg: "Error getting followers", data: []});
-		}
+		const responseData = await  UserServices.one(request, ["followers"]);
+		response.status(responseData.status).send(responseData.data);
 	}
 
     static remove = async (request: Request, response: Response) => {
