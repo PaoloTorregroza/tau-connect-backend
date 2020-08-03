@@ -1,32 +1,51 @@
 import "reflect-metadata";
-import {createConnection} from "typeorm";
+import config from '../ormconfig';
+import {createConnection, ConnectionOptions} from "typeorm";
 import express from "express";
 import * as bodyParser from "body-parser";
 import routes from "./routes/routes";
 import cors from 'cors';
 import morgan from 'morgan';
-import fs from 'fs';
-import path from 'path';
 import helmet from 'helmet';
 
-const init = createConnection().then( async () => {
+const getOptions = () => {
+    let connectionOptions: ConnectionOptions;
+    connectionOptions = {
+        type: 'postgres',
+        synchronize: true,
+        logging: false,
+        extra: {
+          ssl: true,
+        },
+        entities: [
+          "src/entity/**/*.ts"
+       ],
+    };
+    if (process.env.DATABASE_URL) {
+        Object.assign(connectionOptions, { url: process.env.DATABASE_URL });
+    } else {
+        // gets your default configuration
+        // you could get a specific config by name getConnectionOptions('production')
+        // or getConnectionOptions(process.env.NODE_ENV)
+        connectionOptions = <ConnectionOptions>config;
+    }
+    return connectionOptions;
+}
+
+let ormconfig = getOptions();
+
+const init = createConnection(ormconfig).then( async () => {
     try {
         const app = express();
         // create express app
         app.use(bodyParser.json());
         app.use(cors());
         app.use(helmet());
-        
-        if (process.env.NODE_ENV == "production") {
-            const accessLogStream = fs.createWriteStream(path.join(__dirname, "logs/access.log"));
-            app.use(morgan("common", {stream: accessLogStream}))
-        } else {
-            app.use(morgan("common"));
-        }
+        app.use(morgan("common"));
 
         // register express routes from defined application routes
         app.use("/", routes);
-        const server = app.listen(3000);
+        const server = app.listen(process.env.PORT || 3000);
 
         console.log("Express server has started on port 3000.");
 
@@ -35,6 +54,7 @@ const init = createConnection().then( async () => {
         console.log(e);
     }
 });
+
 
 // For testing
 export default init;

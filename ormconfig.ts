@@ -1,4 +1,4 @@
-{
+const config = {
    "type": "postgres",
    "host": "localhost",
    "port": 5432,
@@ -22,3 +22,5 @@
       "subscribersDir": "src/subscriber"
    }
 }
+
+export default config;
