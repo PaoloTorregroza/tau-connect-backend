@@ -19,7 +19,7 @@ const getOptions = () => {
           ssl: true,
         },
         entities: [
-          path.join(__dirname, "src/entity/**/*.{ts,js}")
+          path.join(__dirname, "entity/**/*.{ts,js}")
        ],
     };
     if (process.env.DATABASE_URL) {
@@ -34,6 +34,7 @@ const getOptions = () => {
 }
 
 let ormconfig = getOptions();
+console.log(ormconfig);
 const init = createConnection(ormconfig).then( async () => {
     try {
         const app = express();
