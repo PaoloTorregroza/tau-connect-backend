@@ -7,6 +7,7 @@ import routes from "./routes/routes";
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
+import path from 'path';
 
 const getOptions = () => {
     let connectionOptions: ConnectionOptions;
@@ -18,7 +19,7 @@ const getOptions = () => {
           ssl: true,
         },
         entities: [
-          "src/entity/**/*.ts"
+          path.join(__dirname, "src/entity/**/*.{ts,js}")
        ],
     };
     if (process.env.DATABASE_URL) {
@@ -33,7 +34,6 @@ const getOptions = () => {
 }
 
 let ormconfig = getOptions();
-
 const init = createConnection(ormconfig).then( async () => {
     try {
         const app = express();

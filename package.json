@@ -40,7 +40,7 @@
       "typeorm": "0.2.25"
    },
    "scripts": {
-      "start": "ts-node src/index.ts",
+      "start": "tsc && node ./build/src/index.js",
       "dev": "nodemon",
       "test": "mocha -r ts-node/register src/tests/*.spec.ts"
    }
